@@ -9,10 +9,9 @@ import (
 )
 
 const (
-	pathError = "Path parameter must be a number."
+	pathError  = "Path parameter must be a number."
 	rangeError = "Number must be from 1 to 100."
 )
-
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	s := r.URL.Path[1:]
