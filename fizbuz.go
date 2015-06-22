@@ -9,38 +9,39 @@ import (
 )
 
 const (
-	pathError  = "Path parameter must be a number."
-	rangeError = "Number must be from 1 to 100."
+	errorMsg = "Path parameter must be a number from 1 to 100."
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	s := r.URL.Path[1:]
-	n, err := strconv.Atoi(s)
-	if err != nil {
-		fmt.Fprint(w, pathError)
+	if s, ok := cache[r.URL.Path[1:]]; ok {
+		fmt.Fprint(w, s)
 		return
 	}
-	if n < 1 || n > 100 {
-		fmt.Fprint(w, rangeError)
-		return
-	}
-	f, b := n%3 == 0, n%5 == 0
-	if f || b {
-		s = ""
-	}
-	if f {
-		s = "Fizz"
-	}
-	if b {
-		s += "Buzz"
-	}
-	fmt.Fprintf(w, s)
+	fmt.Fprint(w, errorMsg)
 }
+
+var cache map[string]string
 
 func main() {
 	args := struct{ port string }{}
 	flag.StringVar(&args.port, "port", "80", "The port to serve on.")
 	flag.Parse()
+	cache = make(map[string]string, 100)
+	for i := 0; i < 101; i++ {
+		s := strconv.Itoa(i)
+		t := s
+		f, b := i%3 == 0, i%5 == 0
+		if f || b {
+			t = ""
+		}
+		if f {
+			t = "Fizz"
+		}
+		if b {
+			t += "Buzz"
+		}
+		cache[s] = t
+	}
 	http.HandleFunc("/", handler)
 	if err := http.ListenAndServe(args.port, nil); err != nil {
 		log.Fatal(err)
