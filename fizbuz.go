@@ -1,3 +1,5 @@
+// LICENSE: Anyone may do anything with this.
+
 package main
 
 import (
