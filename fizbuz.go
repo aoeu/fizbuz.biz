@@ -43,7 +43,7 @@ func main() {
 		if b {
 			t += "Buzz"
 		}
-		cache[s] = t
+		cache[s] = t + "\n"
 	}
 	http.HandleFunc("/", handler)
 	switch {
