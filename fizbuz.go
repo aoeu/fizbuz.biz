@@ -18,7 +18,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, s)
 		return
 	}
-	fmt.Fprint(w, errorMsg)
+	http.Error(w, errorMsg, http.StatusNotFound)
 }
 
 var cache map[string]string
