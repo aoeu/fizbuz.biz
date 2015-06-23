@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/http/fcgi"
 	"strconv"
 )
 
@@ -24,7 +25,7 @@ var cache map[string]string
 
 func main() {
 	args := struct{ port string }{}
-	flag.StringVar(&args.port, "port", "80", "The port to serve on.")
+	flag.StringVar(&args.port, "port", "", "The port to serve on.")
 	flag.Parse()
 	cache = make(map[string]string, 100)
 	for i := 0; i < 101; i++ {
@@ -43,7 +44,14 @@ func main() {
 		cache[s] = t
 	}
 	http.HandleFunc("/", handler)
-	if err := http.ListenAndServe(args.port, nil); err != nil {
-		log.Fatal(err)
+	switch {
+	case args.port != "":
+		if err := http.ListenAndServe(args.port, nil); err != nil {
+			log.Fatal(err)
+		}
+	default:
+		if err := fcgi.Serve(nil, nil); err != nil {
+			log.Fatal(err)
+		}
 	}
 }
